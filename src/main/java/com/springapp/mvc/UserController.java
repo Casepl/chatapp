@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,11 +24,15 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public String addUser(@ModelAttribute("user") User user, BindingResult result) {
+	public
+	@ResponseBody
+	ResponseEntity<String> addUser(@ModelAttribute("user") User user, BindingResult result) throws JSONException {
 
 		userRepository.save(user);
-
-		return "redirect:/";
+		JSONObject userJSON = new JSONObject();
+		userJSON.put("firstName", user.getFirstName());
+		userJSON.put("lastName", user.getLastName());
+		return new ResponseEntity<String>(userJSON.toString(),HttpStatus.OK);
 	}
 
 	@RequestMapping("/delete/{userId}")
